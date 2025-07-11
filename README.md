@@ -69,3 +69,11 @@ Para rodar o projeto com Docker, siga os passos abaixo:
    ```
 5. Acesse a API via Swagger em `http://localhost:5000/swagger`.
 
+## Melhorias
+- [ ] Implementar autenticação e autorização
+- [ ] Adicionar Logging nas camadas de serviço
+- [ ] Implementar testes de integração
+- [ ] adicionar seed de dados iniciais
+- [ ] Adicionar Health Checks
+- [ ] Melhorar a documentação da API
+

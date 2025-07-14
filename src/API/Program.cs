@@ -1,8 +1,13 @@
+using Application.DTOs;
 using Application.Interfaces;
+using Application.Mapping;
 using Application.Services;
+using Application.Validator;
+using FluentValidation;
 using Infra.Data;
 using Infra.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +22,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITaskService, TaskService>();
+
+// Register AutoMapper and FluentValidation
+builder.Services.AddAutoMapper(cfg => cfg.AddProfile<TaskProfile>());
+
+//builder.Services.AddAutoMapper(typeof(TaskProfile).Assembly);
+//builder.Services.AddValidatorsFromAssemblyContaining<CreateTaskDtoValidator>();
+
+builder.Services.AddScoped<IValidator<CreateTaskDto>, CreateTaskDtoValidator>();
+builder.Services.AddScoped<IValidator<UpdateTaskDto>, UpdateTaskDtoValidator>();
 
 var app = builder.Build();
 

@@ -1,20 +1,31 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using FluentValidation;
 
 namespace Application.Services
 {
     public class TaskService : ITaskService
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public TaskService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task CreateTaskAsync(TaskItem task)
+        public async Task CreateTaskAsync(CreateTaskDto task)
         {
-            await _unitOfWork.TaskRepository.CreateAsync(task);
+            var taskItem = new TaskItem
+            {
+                Title = task.Title,
+                Description = task.Description,
+                Status = task.Status,
+                DueDate = task.DueDate
+            };
+
+            await _unitOfWork.TaskRepository.CreateAsync(taskItem);
             await _unitOfWork.SaveChangesAsync();
         }
 

@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.DTOs;
+using Domain.Entities;
 using Domain.Enums;
 
 namespace Application.Interfaces
@@ -7,7 +8,7 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<TaskItem>> GetTasksItemsAsync(TaskStatusEnum? status, DateTime? dueDate);
         Task<TaskItem> GetTaskItemByIdAsync(int id);
-        Task CreateTaskAsync(TaskItem task);
+        Task CreateTaskAsync(CreateTaskDto task);
         Task UpdateTaskAsync(TaskItem task);
         Task DeleteTaskAsync(int id);
     }

@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
@@ -48,9 +48,9 @@ namespace Application.Services
             return _unitOfWork.TaskRepository.GetByIdAsync(id);
         }
 
-        public async Task<IEnumerable<TaskItem>> GetTasksItemsAsync(TaskStatusEnum? status, DateTime? dueDate)
+        public async Task<PagedResult<TaskItem>> GetTasksItemsPaginatedAsync(PaginationParams paginationParams, TaskStatusEnum? status, DateTime? dueDate)
         {
-            return await _unitOfWork.TaskRepository.GetAllAsync(status, dueDate);
+            return await _unitOfWork.TaskRepository.GetAllPaginatedAsync(paginationParams, status, dueDate);
         }
 
         public async Task UpdateTaskAsync(TaskItem task)

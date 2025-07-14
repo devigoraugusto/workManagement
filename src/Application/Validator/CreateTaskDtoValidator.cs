@@ -9,7 +9,7 @@ namespace Application.Validator
         {
             RuleFor(task => task.Title)
                 .NotEmpty().WithMessage("Title is required.")
-                .Length(1, 100).WithMessage("Title cannot be longer than 100 characters.");
+                .Length(1, 10).WithMessage("Title cannot be longer than 10 characters.");
             
             RuleFor(task => task.Description)
                 .NotEmpty().WithMessage("Description is required.")

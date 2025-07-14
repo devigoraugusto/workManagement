@@ -28,29 +28,38 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTasks([FromQuery] TaskStatusEnum? status, [FromQuery] DateTime? dueDate)
+        public async Task<IActionResult> GetTasks([FromQuery] PaginationParams paginationParams, [FromQuery] TaskStatusEnum? status, [FromQuery] DateTime? dueDate)
         {
-            var list = await _taskService.GetTasksItemsAsync(status, dueDate);
+            var result = await _taskService.GetTasksItemsPaginatedAsync(paginationParams, status, dueDate);
             
-            return Ok(_mapper.Map<IEnumerable<TaskItemDto>>(list));
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTaskById(int id)
         {
+            _logger.LogInformation("Fetching task with ID {Id}", id);
             var entity = await _taskService.GetTaskItemByIdAsync(id);
-            
-            if (entity == null) return NotFound();
 
+            if (entity == null)
+            {
+                _logger.LogWarning("Task with ID {Id} not found", id);
+                return NotFound();
+            }
             return Ok(_mapper.Map<TaskItemDto>(entity));
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateTask([FromBody] CreateTaskDto task)
         {
+            _logger.LogInformation("Creating a new task with title: {Title}", task.Title);
             var result = await _createValidator.ValidateAsync(task);
+            
             if (!result.IsValid)
+            {
+                _logger.LogWarning("Validation failed for task creation: {Errors}", result.Errors);
                 return BadRequest(result.Errors);
+            }
 
             var entity = _mapper.Map<TaskItem>(task);
 
@@ -64,11 +73,20 @@ namespace API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, [FromBody] UpdateTaskDto task)
         {
-            if (id != task.Id) return BadRequest("Task ID mismatch");
+            _logger.LogInformation("Updating task with ID {Id}", id);
+            if (id != task.Id)
+            {
+                _logger.LogWarning("Task ID mismatch: URL ID {UrlId} does not match body ID {BodyId}", id, task.Id);
+                return BadRequest("Task ID mismatch");
+            }
 
             var result = await _updateValidator.ValidateAsync(task);
-            
-            if (!result.IsValid) return BadRequest(result.Errors);
+
+            if (!result.IsValid)
+            {
+                _logger.LogWarning("Validation failed for task update: {Errors}", result.Errors);
+                return BadRequest(result.Errors);
+            }
 
             var entity = _mapper.Map<TaskItem>(task);
 
@@ -80,9 +98,14 @@ namespace API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {
+            _logger.LogInformation("Deleting task with ID {Id}", id);
             var task = await _taskService.GetTaskItemByIdAsync(id);
 
-            if (task == null) return NotFound();
+            if (task == null)
+            {
+                _logger.LogWarning("Task with ID {Id} not found for deletion", id);
+                return NotFound();
+            }
 
             await _taskService.DeleteTaskAsync(task.Id);
 
